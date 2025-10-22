@@ -79,13 +79,18 @@ if draft_file and submitted_file and forecast_file:
 
     # --- Build dataframes ---
     diff_qty_df = draft_df[draft_df["Key"].isin(diff_qty)].copy()
+    diff_qty_df["Draft Quantity"] = diff_qty_df["Quantity"]
     diff_qty_df["Submitted Quantity"] = diff_qty_df["Key"].map(submitted_dict)
     diff_qty_df["ChangeType"] = "Quantity Changed"
 
     added_df = submitted_df[submitted_df["Key"].isin(added_keys)].copy()
+    added_df["Draft Quantity"] = 0
+    added_df["Submitted Quantity"] = added_df["Quantity"]
     added_df["ChangeType"] = "Added"
 
     removed_df = draft_df[draft_df["Key"].isin(removed_keys)].copy()
+    removed_df["Draft Quantity"] = removed_df["Quantity"]
+    removed_df["Submitted Quantity"] = 0
     removed_df["ChangeType"] = "Removed"
 
     # --- Helper: join with forecast report ---
@@ -134,7 +139,7 @@ if draft_file and submitted_file and forecast_file:
         "Name",
         "DrugName",
         "NDC",
-        "Quantity",
+        "Draft Quantity",
         "Submitted Quantity",
         "Product Description",
     ] + [col for col in forecast_cols if col in unified_df.columns]
